@@ -1,0 +1,80 @@
+# Конфигурационный файл worker
+app:
+  log:
+    enabled: true
+    trap: true
+
+# Engine settings
+engine:
+  # Projects pathes for components searchig like files, payloads etc
+  projects:
+  - ./
+  - ../default
+  # default arguments
+  default:
+    # For undefined route will be use followng route
+    route-name: make
+
+# Web settings 
+web:
+  # Механизм вызова удаленных полезных нагрузок
+  summon:
+    # Количество попыток вызова пэйлоада при отказе
+    try: 4
+    # Хосты по которым потенциально будут осуществляеться вызовы
+    hosts:
+    - http://dispatcher:42002
+    resuest-timeout-mls: {}
+    # Умолчальный таймаут для запроса summon
+    default-resuest-timeout-mls: 1000
+
+  default:
+    # default context
+    context: [ default ]
+
+  # Session settings
+  session:
+    # Disable or enable session 
+    enabled: false
+    # Time to live for session cookie
+    ttl-sec: 86400
+    # This is default secure key
+    ssl-key: MySecureKey
+
+  # Маршрутизация запросов по REMOTE_ADDR
+  # Обработка:
+  #  IP-диапазон
+  #  0.0.0.0/0 по порядку до первого совпадения
+  #  /8  255.0.0.0
+  #  /16  255.255.0.0
+  #  /24  255.255.255.0
+  #  /32  255.255.255.255
+  #     Host
+  #     Выбор секци по полному совпадению заголовка Host
+  #     * - all
+  #       Path 
+  #       перебор path из url по порядку до совпадения
+  #       * - all
+  #         Если значение payload/method - выполнить payload/method
+  # Если значение ~ или не наден - выполнить payload из URL
+  rules:
+    # из локальной подсети
+    127.0.0.1/8:
+      # для localhost пустая ссылка уходит на вывод контента
+      "*":
+        "/":
+          uri: /content/page/main.html
+          trace: true
+        "*":
+          trace: true
+    # со всех инфх адресов
+    0.0.0.0/0:
+      # для всех хостов любая ссылка уходит в ошибку
+      "*":
+        "*":
+          action: error/error404
+          trace: false
+  # options for cli starting with `php index.php`
+  cli:
+    # url for cli mode
+    url: http://localhost
