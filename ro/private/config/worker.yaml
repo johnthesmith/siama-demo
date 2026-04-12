@@ -23,10 +23,9 @@ web:
     try: 4
     # Хосты по которым потенциально будут осуществляеться вызовы
     hosts:
-    - http://dispatcher:42002
-    resuest-timeout-mls: {}
-    # Умолчальный таймаут для запроса summon
-    default-resuest-timeout-mls: 1000
+    - http://dispatcher:42000
+    request-timeout-mls:
+      "*": 1000
 
   default:
     # default context

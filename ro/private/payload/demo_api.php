@@ -19,8 +19,10 @@ class DemoApi extends WebPayload
         Методы API
     */
 
+
+
     /*
-        Эндпоинт возвращает hello<separator>world
+        Эндпоинт
     */
     public function proc
     (
@@ -29,9 +31,10 @@ class DemoApi extends WebPayload
     {
         $this -> setContent
         (
-            $this  -> summon( 'demo', 'subproc-begin', [ 't' => $t ] ) -> getContent()
-            .$this -> summon( 'demo', 'subproc-work' ) -> getContent()
-            .$this -> summon( 'demo', 'subproc-end' ) -> getContent()
+            'proc(' . $t . ');'
+            . $this -> summon( 'demo', 'subproc-begin', [ 't' => $t ] ) -> getContent()
+            . $this -> summon( 'demo', 'subproc-work', [ 't' => $t ] ) -> getContent()
+            . $this -> summon( 'demo', 'subproc-end' ) -> getContent()
         );
         return $this;
     }
@@ -46,21 +49,7 @@ class DemoApi extends WebPayload
         string $t = ''
     )
     {
-        $this -> setContent( 'begin' . '-' . $t . '/' );
-        return $this;
-    }
-
-
-
-    /*
-        Метод возвращает hello
-    */
-    public function subproc_work()
-    {
-        $a = $this -> summon( 'demo', 'subproc-work-a' ) -> getContent();
-        $b = $this -> summon( 'demo', 'subproc-work-b' ) -> getContent();
-        $c = $this -> summon( 'demo', 'subproc-work-c' ) -> getContent();
-        $this -> setContent( $a . '/' . $b . '/' . $c );
+        $this -> setContent( 'subproc-begin(' . $t . ');' );
         return $this;
     }
 
@@ -71,7 +60,21 @@ class DemoApi extends WebPayload
     */
     public function subproc_end()
     {
-        $this -> setContent( 'end' );
+        $this -> setContent( 'subproc-end();' );
+        return $this;
+    }
+
+
+
+    /*
+        Метод возвращает hello
+    */
+    public function subproc_work()
+    {
+//        $a = $this -> summon( 'demo', 'subproc-work-a', [] ) -> getContent();
+//        $b = $this -> summon( 'demo', 'subproc-work-b' ) -> getContent();
+//        $c = $this -> summon( 'demo', 'subproc-work-c' ) -> getContent();
+        $this -> setContent( 'subproc-work();' );
         return $this;
     }
 
@@ -82,7 +85,7 @@ class DemoApi extends WebPayload
     */
     public function subproc_work_a()
     {
-        $this -> setContent( 'a' );
+        $this -> setContent( '|a|' );
         return $this;
     }
 
