@@ -22,92 +22,129 @@ class DemoApi extends WebPayload
 
 
     /*
-        Эндпоинт
+        Эндпоинт возвращает собранный контент
+        Передает полное состояние вызываемым компонентам
+        Использует их как черные ящики формирующие данные
     */
-    public function proc
+    public function a
     (
-        string $t = ''
+        string $t = '?'
     )
     {
-        $this -> setContent
+        return $this
+        -> setParam( 'fs','f')
+        -> setContent( '|a-'. $t.'|' )
+        -> summon( 'demo', 'aa', [ 't' => $t ] )
+        -> summon( 'demo', 'ab', [ 't' => $t ] )
+        -> summon( 'demo', 'ac', [ 't' => $t ] )
+//        -> paramsToContent()
+        ;
+    }
+
+
+
+    /*
+        Метод возвращает модифицированнйы конент
+    */
+    public function aa
+    (
+        string $t = '?'
+    )
+    {
+        return $this
+        -> setContent( $this -> getContent() . '|aa-'. $t .'|' )
+        -> summon( 'demo', 'aaa', [ 't' => $t ] );
+    }
+
+
+
+
+    /*
+        Метод возвращает модифицированнйы конент
+    */
+    public function aaa
+    (
+        string $t = '?'
+    )
+    {
+        return $this
+        -> setContent( $this -> getContent() . '|aaa-'. $t .'|' )
+        ;
+    }
+
+
+
+    /*
+        Метод возвращает модифицированный контент
+        Не передает состояние вызываемым компонентам
+    */
+    public function ab
+    (
+        string $t = '?'
+    )
+    {
+        return $this -> setContent
         (
-            'proc(' . $t . ');'
-            . $this -> summon( 'demo', 'subproc-begin', [ 't' => $t ] ) -> getContent()
-            . $this -> summon( 'demo', 'subproc-work', [ 't' => $t ] ) -> getContent()
-            . $this -> summon( 'demo', 'subproc-end' ) -> getContent()
+            $this -> getContent() . '|ab-'. $t .'|'
+            . $this -> invoke( 'demo', 'aba', [ 't' => $t ] ) -> getContent()
+            . $this -> invoke( 'demo', 'abb', [ 't' => $t ] ) -> getContent()
+            . $this -> invoke( 'demo', 'abc', [ 't' => $t ] ) -> getContent()
         );
-        return $this;
     }
 
 
 
     /*
-        Метод возвращает hello
+        Метод возвращает обработанный конетнте
     */
-    public function subproc_begin
+    public function ac
     (
-        string $t = ''
+        string $t = '?'
     )
     {
-        $this -> setContent( 'subproc-begin(' . $t . ');' );
+        return $this
+        -> setContent( $this -> getContent() . '|ac-' . $t . '|' );
+    }
+
+
+
+    /*
+        Метод aba
+    */
+    public function aba
+    (
+        string $t = '?'
+    )
+    {
+        $this -> setContent( '|aba-' . $t . '|' );
         return $this;
     }
 
 
 
     /*
-        Метод возвращает hello
+        Метод abb
     */
-    public function subproc_end()
+    public function abb
+    (
+        string $t = '?'
+    )
     {
-        $this -> setContent( 'subproc-end();' );
+        $this -> setContent( '|abb-' . $t . '|' );
         return $this;
     }
 
 
 
     /*
-        Метод возвращает hello
+        Метод abc
     */
-    public function subproc_work()
+    public function abc
+    (
+        string $t = '?'
+    )
     {
-//        $a = $this -> summon( 'demo', 'subproc-work-a', [] ) -> getContent();
-//        $b = $this -> summon( 'demo', 'subproc-work-b' ) -> getContent();
-//        $c = $this -> summon( 'demo', 'subproc-work-c' ) -> getContent();
-        $this -> setContent( 'subproc-work();' );
-        return $this;
-    }
-
-
-
-    /*
-        Метод A
-    */
-    public function subproc_work_a()
-    {
-        $this -> setContent( '|a|' );
-        return $this;
-    }
-
-
-
-    /*
-        Метод B
-    */
-    public function subproc_work_b()
-    {
-        $this -> setContent( 'b' );
-        return $this;
-    }
-
-
-
-    /*
-        Метод C
-    */
-    public function subproc_work_c()
-    {
-        $this -> setContent( 'c' );
+        $this -> setContent( '|abc-' . $t . '|' );
         return $this;
     }
 }

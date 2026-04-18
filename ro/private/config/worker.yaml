@@ -2,7 +2,7 @@
 app:
   log:
     enabled: true
-    trap: true
+    trap: false
 
 # Engine settings
 engine:
@@ -17,15 +17,6 @@ engine:
 
 # Web settings 
 web:
-  # Механизм вызова удаленных полезных нагрузок
-  summon:
-    # Количество попыток вызова пэйлоада при отказе
-    try: 4
-    # Хосты по которым потенциально будут осуществляеться вызовы
-    hosts:
-    - http://dispatcher:42000
-    request-timeout-mls:
-      "*": 1000
 
   default:
     # default context
@@ -40,39 +31,55 @@ web:
     # This is default secure key
     ssl-key: MySecureKey
 
-  # Маршрутизация запросов по REMOTE_ADDR
-  # Обработка:
-  #  IP-диапазон
-  #  0.0.0.0/0 по порядку до первого совпадения
-  #  /8  255.0.0.0
-  #  /16  255.255.0.0
-  #  /24  255.255.255.0
-  #  /32  255.255.255.255
-  #     Host
-  #     Выбор секци по полному совпадению заголовка Host
-  #     * - all
-  #       Path 
-  #       перебор path из url по порядку до совпадения
-  #       * - all
-  #         Если значение payload/method - выполнить payload/method
-  # Если значение ~ или не наден - выполнить payload из URL
+  # Маршрутизация запросов worker
   rules:
     # из локальной подсети
-    127.0.0.1/8:
-      # для localhost пустая ссылка уходит на вывод контента
+    "127.0.0.0/8":
+      # входящий на любой порт
       "*":
-        "/":
-          uri: /content/page/main.html
-          trace: true
+        # для любого сайта
         "*":
-          trace: true
+          # пустая ссылка
+          "/":
+            # уходит на вывод контента
+            uri: /content/page/main.html
+            trace: true
+          "*":
+            # иначе выполняется как есть 
+            # с трассировкой
+            trace: true
     # со всех инфх адресов
-    0.0.0.0/0:
-      # для всех хостов любая ссылка уходит в ошибку
+    "0.0.0.0/0":
+      # для всех портов
       "*":
+        # для всех хостов
         "*":
-          action: error/error404
-          trace: false
+          # любая ссылка
+          "*":
+            # уходит в ошибку
+            action: error/error404
+            # без трассировки
+            trace: false
+
+  # Механизм вызова удаленных полезных нагрузок
+  summon:
+    # Возможность локального вызова если полезная нагрузка доступна 
+    prefer-local: false
+    # Количество попыток вызова пэйлоада при отказе
+    try: 4
+    # Хосты по которым потенциально будут осуществляеться вызовы
+    # protocol://[user[:password]@]host[:port]
+    hosts:
+    - http://127.0.0.1:42011
+    # Предельное время исполнения запроса
+    # payload[/method]|*
+    request-timeout-mls:
+      "*": 1000
+    # Предельное время подклюения к хосту
+    # payload[/method]|*
+    connect-timeout-mls:
+      "*": 1000
+
   # options for cli starting with `php index.php`
   cli:
     # url for cli mode
