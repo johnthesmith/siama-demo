@@ -16,7 +16,7 @@ require_once LIB . '/core/web_bot.php';
 class DemoApi extends WebPayload
 {
     /**************************************************************************
-        Методы API
+        Методы API a
     */
 
 
@@ -32,14 +32,13 @@ class DemoApi extends WebPayload
     )
     {
         return $this
-        -> setParam( 'fs','f')
         -> setContent( '|a-'. $t.'|' )
         -> summon( 'demo', 'aa', [ 't' => $t ] )
         -> summon( 'demo', 'ab', [ 't' => $t ] )
         -> summon( 'demo', 'ac', [ 't' => $t ] )
-//        -> paramsToContent()
         ;
     }
+
 
 
 
@@ -53,7 +52,8 @@ class DemoApi extends WebPayload
     {
         return $this
         -> setContent( $this -> getContent() . '|aa-'. $t .'|' )
-        -> summon( 'demo', 'aaa', [ 't' => $t ] );
+        -> summon( 'demo', 'aaa', [ 't' => $t ] )
+        ;
     }
 
 
@@ -146,5 +146,43 @@ class DemoApi extends WebPayload
     {
         $this -> setContent( '|abc-' . $t . '|' );
         return $this;
+    }
+
+
+
+
+    /**************************************************************************
+        Методы API b
+    */
+
+    /*
+        Эндпоинт возвращает собранные аргументы
+        Передает полное состояние вызываемым компонентам
+        Использует их как черные ящики формирующие данные
+    */
+    public function b
+    (
+        string $t = '?'
+    )
+    {
+        return $this
+        -> setParams([ 'b' => $t ])
+        -> summon( 'demo', 'ba', [ 't' => $t ] )
+        ;
+    }
+
+
+
+    /*
+        Метод возвращает модифицированное состояние params
+    */
+    public function ba
+    (
+        string $t = '?'
+    )
+    {
+        return $this
+        -> setParam( 'ba', $t )
+        ;
     }
 }
